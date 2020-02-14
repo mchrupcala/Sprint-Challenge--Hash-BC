@@ -26,8 +26,8 @@ def proof_of_work(last_proof):
     proof = 0
     # block_string = json.dumps(block, sort_keys=True)
     while valid_proof(last_proof, proof) is False:
-        proof += 1
-
+        proof = random.randint(1, 1000000000000000000000)
+        # print(proof)
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
 
@@ -43,12 +43,13 @@ def valid_proof(last_hash, proof):
 # https://lambda-coin-test-1.herokuapp.com/api/full_chain
     old_guess = f'{last_hash}'.encode()
     old_guess_hash = hashlib.sha256(old_guess).hexdigest()
+    str_var = len(old_guess_hash)-6
 
     new_guess = f'{proof}'.encode()
     new_guess_hash = hashlib.sha256(new_guess).hexdigest()
 
-    # print("Last 6 of last hash: ", str(old_guess_hash)[:6], "First 6 of new hash: ", str(new_guess_hash)[:6])
-    return new_guess_hash[len(new_guess_hash)-6:0] == old_guess_hash[:6]
+    # print(old_guess_hash, "Last 6 of last hash: ", str(old_guess_hash[str_var:]), '/n*********************/n', new_guess_hash, "First 6 of new hash: ", new_guess_hash[:6])
+    return new_guess_hash[:6] == str(old_guess_hash[str_var:])
 
 
 if __name__ == '__main__':

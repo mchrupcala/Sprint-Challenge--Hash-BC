@@ -24,7 +24,9 @@ def proof_of_work(last_proof):
 
     print("Searching for next proof")
     proof = 0
-    #  TODO: Your code here
+    # block_string = json.dumps(block, sort_keys=True)
+    while valid_proof(last_proof, proof) is False:
+        proof += 1
 
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
@@ -38,9 +40,15 @@ def valid_proof(last_hash, proof):
 
     IE:  last_hash: ...AE9123456, new hash 123456E88...
     """
+# https://lambda-coin-test-1.herokuapp.com/api/full_chain
+    old_guess = f'{last_hash}'.encode()
+    old_guess_hash = hashlib.sha256(old_guess).hexdigest()
 
-    # TODO: Your code here!
-    pass
+    new_guess = f'{proof}'.encode()
+    new_guess_hash = hashlib.sha256(new_guess).hexdigest()
+
+    # print("Last 6 of last hash: ", str(old_guess_hash)[:6], "First 6 of new hash: ", str(new_guess_hash)[:6])
+    return new_guess_hash[len(new_guess_hash)-6:0] == old_guess_hash[:6]
 
 
 if __name__ == '__main__':
@@ -65,7 +73,13 @@ if __name__ == '__main__':
     while True:
         # Get the last proof from the server
         r = requests.get(url=node + "/last_proof")
+        # s = requests.get(url=node + "/full_chain")
+        # lbi = len(s.json()['chain'])-1
+        # last_block = s.json()['chain'][lbi]
+        # print("Full chain: ", s.json()['chain'])
+        # print("______________Last block: ", last_block)
         data = r.json()
+        # print("Last proof: ", data)
         new_proof = proof_of_work(data.get('proof'))
 
         post_data = {"proof": new_proof,
